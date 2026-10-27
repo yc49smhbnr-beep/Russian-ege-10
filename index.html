@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090b13">
+<title>Русский тренажёр слов</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#edf0ff;background:#080a11;--muted:#929bbd;--line:#252b43;--panel:#101421;--panel2:#151a2b;--purple:#8a5cff;--blue:#318bff}
+*{box-sizing:border-box}body{margin:0;padding:26px 16px 42px;min-height:100vh;background:radial-gradient(ellipse at 15% 0%,#25204a 0,transparent 38%),radial-gradient(ellipse at 100% 25%,#102b4a 0,transparent 35%),#080a11}
+main{max-width:900px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h1{font-size:clamp(1.8rem,5vw,2.65rem);letter-spacing:-.045em;margin:4px 0 7px;font-weight:850}h2{letter-spacing:-.025em}.muted,small{color:var(--muted)}p{line-height:1.55}.pill{display:inline-block;background:#1a2033;border:1px solid #2c3451;border-radius:999px;padding:6px 11px;font-size:.84rem;color:#b9c7ff}
+.panel{background:linear-gradient(145deg,rgba(19,24,40,.96),rgba(11,15,25,.97));border:1px solid var(--line);border-radius:22px;padding:22px;margin:16px 0;box-shadow:0 18px 55px #0003,inset 0 1px #ffffff05}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button{flex:1;min-width:110px}
+button,.button{font:inherit;font-weight:650;border:1px solid #303852;background:#171d2e;color:#dfe5ff;border-radius:13px;padding:12px 15px;cursor:pointer;transition:transform .15s,border-color .15s,background .15s}button:hover{border-color:#7160d9;background:#202640}button:active{transform:scale(.985)}button.primary{background:linear-gradient(110deg,var(--purple),var(--blue));color:white;border-color:transparent;box-shadow:0 7px 22px #6548ed35}button:disabled{opacity:.42;cursor:not-allowed}button.active{background:#29244a;border-color:#7c66f6;color:#dcd4ff}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#141a2a;border:1px solid #252d47;border-radius:16px;padding:15px;text-align:center}.stat strong{display:block;font-size:1.6rem;color:#c9baff;margin-bottom:3px}
+.word{font-size:clamp(2.15rem,8vw,3.7rem);font-weight:850;letter-spacing:.015em;text-align:center;margin:36px 0 24px;overflow-wrap:anywhere;text-shadow:0 0 28px #7e5cff25}
+input,textarea,select{font:inherit;width:100%;border:1px solid #343d5b;border-radius:13px;padding:13px 14px;background:#0c101b;color:#f0f2ff;outline:none}input:focus,textarea:focus,select:focus{border-color:#8b6cff;box-shadow:0 0 0 3px #8b6cff20}input[type=checkbox]{accent-color:#8a5cff}
+.answer-row{display:flex;gap:10px;max-width:520px;margin:0 auto}.answer-row input{text-align:center;font-size:1.25rem;min-width:0;flex:1}.answer-row button{white-space:nowrap}
+.feedback{border:1px solid transparent;border-radius:14px;padding:14px;margin-top:16px}.good{background:#0f2b25;border-color:#1b604b;color:#a6f1d1}.bad{background:#301922;border-color:#703247;color:#ffbac8}
+.hidden{display:none!important}.wordlist{padding-left:22px}.wordlist li{margin:10px 0;overflow-wrap:anywhere}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.actions button{flex:1}.footer{font-size:.88rem;color:#697391;text-align:center;padding:16px}
+label{display:block;font-weight:650;margin:13px 0 7px}.section-kicker{color:#a99aff;font-size:.78rem;text-transform:uppercase;letter-spacing:.14em;font-weight:800}.hero{border-color:#3b326a;background:linear-gradient(145deg,#17152a,#101624 60%,#0d1420)}.progressline{height:7px;background:#222941;border-radius:99px;overflow:hidden;margin:12px 0 20px}.progressline span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--blue));border-radius:99px}
+@media(max-width:520px){body{padding:18px 12px 30px}.panel{padding:17px;border-radius:18px}.stats{gap:6px}.stat{padding:10px 4px}.stat strong{font-size:1.35rem}.answer-row{flex-direction:column}.answer-row button{width:100%}.tabs button{min-width:calc(50% - 8px)}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><div><div class="section-kicker">ЕГЭ · русский язык</div><h1>Русский тренажёр слов</h1><p class="muted">Вставляй пропущенные буквы. Отслеживай прогресс и разбирай ошибки.</p></div><span class="pill">✦ Учись в своём темпе</span></div>
+  <div class="panel">
+    <div class="tabs" role="tablist" aria-label="Разделы">
+      <button id="tabTrain" class="active" type="button">Тренировка</button>
+      <button id="tabErrors" type="button">Ошибки <span id="errorBadge">0</span></button>
+      <button id="tabStats" type="button">Статистика</button>
+      <button id="tabWords" type="button">Список слов</button>
+    </div>
+  </div>
+
+  <section id="trainView" class="panel hero">
+    <div class="section-kicker">Тренировка</div>
+    <div class="top"><span class="muted" id="progress">Слово 1 из 10</span><span class="pill" id="streak">Верно подряд: 0</span></div>
+    <label style="display:flex;align-items:center;gap:9px;font-weight:500;margin-top:14px"><input id="randomOrder" type="checkbox" checked style="width:auto;transform:scale(1.15)"> Случайный порядок слов</label>
+    <div class="actions" style="margin-top:8px"><button id="shuffleBtn" type="button">Перемешать список</button></div>
+    <div class="progressline"><span id="progressFill"></span></div>
+    <div class="word" id="maskedWord">пр_кратить</div>
+    <p class="muted" id="hint" style="text-align:center">Введи пропущенную букву или буквы по порядку.</p>
+    <form id="answerForm">
+      <label for="answer">Пропущенные буквы</label>
+      <div class="answer-row"><input id="answer" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Пропущенные буквы" required><button class="primary" id="checkBtn">Проверить</button></div>
+    </form>
+    <div id="feedback" class="feedback hidden" aria-live="polite"></div>
+    <div class="actions"><button id="nextBtn" class="primary hidden" type="button">Следующее слово →</button><button id="skipBtn" type="button">Пропустить</button></div>
+    <p class="muted" style="font-size:.9rem">Подсказка: если пропусков несколько, введи все буквы подряд, без пробелов.</p>
+  </section>
+
+  <section id="errorsView" class="panel hidden">
+    <h2>Слова, в которых были ошибки</h2><p class="muted">Ошибочное слово добавляется сюда автоматически. Повтори их, когда будешь готов.</p>
+    <div id="errorsContent"></div>
+    <div class="actions"><button id="retryErrors" class="primary" type="button">Тренировать ошибки</button><button id="clearErrors" type="button">Очистить список</button></div>
+  </section>
+
+  <section id="statsView" class="panel hidden">
+    <h2>Итоги тренировки</h2>
+    <div class="stats"><div class="stat"><strong id="statDone">0</strong><span>Проверено</span></div><div class="stat"><strong id="statCorrect">0</strong><span>Верно</span></div><div class="stat"><strong id="statPercent">0%</strong><span>Точность</span></div></div>
+    <p id="statsDetail" class="muted">Начни тренировку, чтобы увидеть результаты.</p>
+    <div class="actions"><button id="resetStats" type="button">Сбросить статистику</button></div>
+  </section>
+
+  <section id="wordsView" class="panel hidden">
+    <h2>Твой список слов</h2>
+    <p>Каждая строка — одно слово с подчёркиванием вместо пропущенных букв. Например: <code>пр_кратить|е</code> или <code>пр_кратить</code>. Если после вертикальной черты указать правильные пропущенные буквы, они будут использованы для проверки. Если не указать — приложение возьмёт буквы из полного слова, если оно записано как <code>пр[е]кратить</code>. Самый удобный формат: <code>пр[е]кратить</code>.</p>
+    <label for="wordInput">Список слов (одно на строку)</label>
+    <textarea id="wordInput" rows="7" placeholder="пр[е]кратить&#10;пр[и]коснуться&#10;бе[с]крайний"></textarea>
+    <div class="actions"><button id="loadWords" class="primary" type="button">Загрузить список</button><button id="restoreWords" type="button">Вернуть пример</button></div>
+    <p id="wordMessage" class="muted" aria-live="polite"></p>
+    <small>Формат <code>часть[пропущенные буквы]часть</code> позволяет указать пропуск в любом месте слова. Можно добавить несколько пропусков: <code>ра[с]с[к]азать</code> (ответ: «ск»).</small>
+  </section>
+  <div class="footer">Работает в браузере. Слова и результаты сохраняются на этом устройстве.</div>
+</main>
+<script>
+const sampleWords = [
+  {before:"пр", missing:"е", after:"кратить", full:"прекратить"},
+  {before:"пр", missing:"и", after:"коснуться", full:"прикоснуться"},
+  {before:"бе", missing:"с", after:"крайний", full:"бескрайний"},
+  {before:"ра", missing:"с", after:"писать", full:"расписать"},
+  {before:"и", missing:"с", after:"чезнуть", full:"исчезнуть"},
+  {before:"пр", missing:"е", after:"одолеть", full:"преодолеть"},
+  {before:"пр", missing:"и", after:"бывать", full:"прибывать"},
+  {before:"во", missing:"с", after:"становить", full:"восстановить"},
+  {before:"бе", missing:"з", after:"вкусный", full:"безвкусный"},
+  {before:"пр", missing:"е", after:"увеличить", full:"преувеличить"}
+];
+const $ = id => document.getElementById(id);
+let words = load("trainerWords", sampleWords);
+let errors = load("trainerErrors", []);
+let stats = load("trainerStats", {done:0,correct:0,streak:0});
+let queue = [], index = 0, current = null, answered = false;
+let randomOrder = load("trainerRandomOrder", true);
+$("randomOrder").checked = randomOrder;
+function load(key, fallback){try{return JSON.parse(localStorage.getItem(key)) ?? fallback}catch{return fallback}}
+function save(){localStorage.setItem("trainerWords",JSON.stringify(words));localStorage.setItem("trainerErrors",JSON.stringify(errors));localStorage.setItem("trainerStats",JSON.stringify(stats))}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;","<":"&lt;","&gt;":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+function masked(w){return w.before+"_"+w.after}
+function shuffled(list){
+ const result=list.slice();
+ for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]]}
+ return result;
+}
+function startQueue(list=words){queue=randomOrder?shuffled(list):list.slice();index=0;showNext()}
+function showNext(){
+  answered=false;$("feedback").classList.add("hidden");$("nextBtn").classList.add("hidden");$("checkBtn").disabled=false;$("answer").disabled=false;$("answer").value="";
+  if(!queue.length){$("maskedWord").textContent="Список пуст";$("progress").textContent="Нет слов";$("answer").disabled=true;$("checkBtn").disabled=true;return}
+  if(index>=queue.length){if($("progressFill"))$("progressFill").style.width="100%";$("maskedWord").textContent="Тренировка завершена!";$("progress").textContent=`Пройдено ${queue.length} слов`; $("hint").textContent="Посмотри статистику или повтори ошибки.";$("answer").disabled=true;$("checkBtn").disabled=true;$("skipBtn").textContent="Начать заново";return}
+  current=queue[index];$("maskedWord").textContent=masked(current);$("progress").textContent=`Слово ${index+1} из ${queue.length}`;if($("progressFill"))$("progressFill").style.width=((index/queue.length)*100)+"%";$("hint").textContent="Введи пропущенную букву или буквы по порядку.";$("streak").textContent=`Верно подряд: ${stats.streak}`;$("skipBtn").textContent="Пропустить";$("answer").focus();
+}
+function renderErrors(){
+ if(!errors.length){$("errorsContent").innerHTML='<p class="muted">Пока ошибок нет. Отличная работа!</p>';return}
+ $("errorsContent").innerHTML='<ol class="wordlist">'+errors.map(e=>`<li><strong>${escapeHtml(e.full)}</strong> — ответ: <b>${escapeHtml(e.missing)}</b>${e.lastAnswer!==undefined?` <span class="muted">(твой ответ: ${escapeHtml(e.lastAnswer||"пусто")})</span>`:""}</li>`).join("")+'</ol>';
+}
+function renderStats(){$("statDone").textContent=stats.done;$("statCorrect").textContent=stats.correct;$("statPercent").textContent=(stats.done?Math.round(stats.correct/stats.done*100):0)+"%";$("statsDetail").textContent=stats.done?`Неправильных ответов: ${stats.done-stats.correct}. Текущая серия правильных ответов: ${stats.streak}.`:"Начни тренировку, чтобы увидеть результаты.";$("errorBadge").textContent=errors.length}
+function checkAnswer(value){
+ if(answered||!current)return; const user=value.trim().toLowerCase(), right=current.missing.toLowerCase();answered=true;
+ stats.done++;const ok=user===right;
+ if(ok){stats.correct++;stats.streak++;$("feedback").className="feedback good";$("feedback").innerHTML=`Верно! Полное слово: <strong>${escapeHtml(current.full)}</strong>`;}
+ else{stats.streak=0;let found=errors.find(e=>e.full===current.full);if(found){found.lastAnswer=user}else{errors.push({...current,lastAnswer:user})}$("feedback").className="feedback bad";$("feedback").innerHTML=`Пока неверно. Правильный ответ: <strong>${escapeHtml(right)}</strong>. Слово: <strong>${escapeHtml(current.full)}</strong>. Добавлено в список ошибок.`;}
+ $("feedback").classList.remove("hidden");$("checkBtn").disabled=true;$("answer").disabled=true;$("nextBtn").classList.remove("hidden");$("nextBtn").focus();save();renderErrors();renderStats();$("streak").textContent=`Верно подряд: ${stats.streak}`;
+}
+function showView(name){
+ for(const v of ["train","errors","stats","words"])$(v+"View").classList.toggle("hidden",v!==name);
+ for(const v of ["Train","Errors","Stats","Words"])$("tab"+v).classList.toggle("active",v.toLowerCase()===name);
+ if(name==="errors")renderErrors();if(name==="stats")renderStats();if(name==="words")$("wordInput").value=words.map(w=>w.before+"["+w.missing+"]"+w.after).join("\n");
+}
+function parseWords(text){
+ const out=[];
+ for(const raw of text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean)){
+   const m=raw.match(/^(.*?)\[([^\]]+)\](.*)$/);
+   if(m){out.push({before:m[1],missing:m[2],after:m[3],full:m[1]+m[2]+m[3]});continue}
+   const pipe=raw.split("|");
+   if(pipe.length===2 && pipe[1]){const maskedWord=pipe[0], blanks=(maskedWord.match(/_/g)||[]).length;if(blanks){const [before,...rest]=maskedWord.split("_");const after=rest.join("_");out.push({before,missing:pipe[1],after,full:maskedWord.replace(/_/g,pipe[1])});continue}}
+   throw new Error(`Не понял строку «${raw}». Используй формат слово[буквы].`);
+ }
+ if(!out.length)throw new Error("Добавь хотя бы одно слово.");
+ return out;
+}
+$("answerForm").addEventListener("submit",e=>{e.preventDefault();checkAnswer($("answer").value)});
+$("nextBtn").addEventListener("click",()=>{index++;showNext()});
+$("skipBtn").addEventListener("click",()=>{if(index>=queue.length){startQueue();return}index++;showNext()});
+$("randomOrder").addEventListener("change",()=>{randomOrder=$("randomOrder").checked;localStorage.setItem("trainerRandomOrder",JSON.stringify(randomOrder));if(index===0)startQueue();});
+$("shuffleBtn").onclick=()=>{randomOrder=true;$("randomOrder").checked=true;localStorage.setItem("trainerRandomOrder",JSON.stringify(true));showView("train");startQueue();};
+$("tabTrain").onclick=()=>showView("train");$("tabErrors").onclick=()=>showView("errors");$("tabStats").onclick=()=>showView("stats");$("tabWords").onclick=()=>showView("words");
+$("retryErrors").onclick=()=>{if(!errors.length)return;showView("train");startQueue(errors.map(e=>({before:e.before,missing:e.missing,after:e.after,full:e.full})))};
+$("clearErrors").onclick=()=>{if(confirm("Очистить список ошибок?")){errors=[];save();renderErrors();renderStats()}};
+$("resetStats").onclick=()=>{if(confirm("Сбросить статистику?")){stats={done:0,correct:0,streak:0};save();renderStats();showNext()}};
+$("loadWords").onclick=()=>{try{words=parseWords($("wordInput").value);save();$("wordMessage").textContent=`Загружено слов: ${words.length}.`;startQueue();showView("train")}catch(e){$("wordMessage").textContent=e.message}};
+$("restoreWords").onclick=()=>{$("wordInput").value=sampleWords.map(w=>w.before+"["+w.missing+"]"+w.after).join("\n");$("wordMessage").textContent="Примерный список готов к загрузке."};
+renderErrors();renderStats();startQueue();
+</script>
+</body>
+</html>
